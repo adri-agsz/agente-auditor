@@ -1,479 +1,289 @@
-# 🎓 Code Review Assistant
+# 🎓 Code Review Assistant - Codelab Edition
 
-An intelligent, multi-agent code review system powered by Google ADK and Gemini models. This assistant provides comprehensive Python code analysis including structure evaluation, PEP 8 style checking, automated testing, and personalized feedback with improvement tracking.
+**Learn to build production AI agents with Google ADK**
+
+This is the educational codelab branch designed for the "Building a Production AI Code Review Assistant with Google ADK" workshop. You'll progressively build a complete multi-agent system from scratch, learning production patterns along the way.
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
-![ADK](https://img.shields.io/badge/Google%20ADK-1.0%2B-green)
-![Gemini](https://img.shields.io/badge/Gemini-2.0-red)
-![License](https://img.shields.io/badge/License-MIT-yellow)
+![ADK](https://img.shields.io/badge/Google%20ADK-1.15%2B-green)
+![Gemini](https://img.shields.io/badge/Gemini-2.5-red)
 
-## 🌟 Features
+## 🎯 What You'll Build
 
-### Core Capabilities
-- **🔍 Code Structure Analysis**: Parse and analyze Python code structure, identifying functions, classes, imports, and potential issues
-- **📏 PEP 8 Style Checking**: Validate code against Python style guidelines with detailed violation reports and scoring
-- **🧪 Automated Testing**: Generate and run appropriate test cases based on code analysis
-- **💬 Personalized Feedback**: Provide constructive, encouraging feedback that adapts based on submission history
-- **📊 Progress Tracking**: Monitor improvement over time with persistent grading history
-- **🎯 Multi-Attempt Support**: Allow multiple submission attempts with incremental guidance
+Starting from a 7-line agent, you'll progressively create:
 
-### Technical Features
-- Multi-agent orchestration using ADK's Sequential and Loop agents
-- Configurable LLM models (Gemini Flash for analysis, Gemini Pro for feedback)
-- Session persistence with multiple backend options
-- Artifact management for reports and feedback history
-- Deployment ready for Vertex AI Agent Engine, Cloud Run, and GKE
+- **Review Pipeline**: 4 specialized agents (Analyzer → Style Checker → Test Runner → Synthesizer)
+- **Fix Pipeline**: Automated code fixing with iterative refinement (Loop architecture)
+- **Production Tools**: AST parsing, style checking, test generation, progress tracking
+- **State Management**: Multi-tier state with type-safe constants pattern
+- **Cloud Deployment**: Deploy to Agent Engine or Cloud Run with observability
 
-## 🏛️ Architecture
+## 📚 Codelab Structure
 
-The Code Review Assistant uses a sophisticated multi-agent architecture with specialized agents working in sequence to provide comprehensive code analysis:
-
-```mermaid
-flowchart TB
-    %% Styling
-    classDef userNode fill:#e1f5fe,stroke:#01579b,stroke-width:3px,color:#000
-    classDef mainAgent fill:#fff3e0,stroke:#e65100,stroke-width:3px,color:#000
-    classDef workflowAgent fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000
-    classDef llmAgent fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px,color:#000
-    classDef tool fill:#fce4ec,stroke:#880e4f,stroke-width:2px,color:#000
-    classDef storage fill:#f5f5f5,stroke:#424242,stroke-width:2px,color:#000
-
-    %% Nodes
-    User[("👤 User<br/>Submits Python Code")]:::userNode
-    
-    %% Main Orchestrator
-    MainAgent["🎯 Main Code Review Agent<br/>(Orchestrator)"]:::mainAgent
-    
-    %% Workflow Agents
-    Sequential["📋 Sequential Agent<br/>Manages Pipeline Flow"]:::workflowAgent
-    Loop["🔄 Loop Agent<br/>Iterative Refinement<br/>(max 3 iterations)"]:::workflowAgent
-    
-    %% Sub-Agents
-    Analyzer["🔍 Code Analyzer Agent<br/>(Gemini Flash)<br/>Parses & understands code"]:::llmAgent
-    StyleChecker["📏 Style Checker Agent<br/>(Gemini Flash)<br/>PEP 8 validation"]:::llmAgent
-    TestRunner["🧪 Test Runner Agent<br/>(Gemini Flash)<br/>Test generation & execution"]:::llmAgent
-    Critic["🎭 Critic Agent<br/>(Gemini Flash)<br/>Reviews code quality"]:::llmAgent
-    Reviser["✏️ Reviser Agent<br/>(Gemini Flash)<br/>Suggests improvements"]:::llmAgent
-    FeedbackSynth["💬 Feedback Synthesizer<br/>(Gemini Pro)<br/>Personalized feedback"]:::llmAgent
-    
-    %% Tools
-    AnalyzeTool[["🔧 analyze_code_structure()<br/>AST parsing & analysis"]]:::tool
-    StyleTool[["🔧 check_code_style()<br/>pycodestyle integration"]]:::tool
-    TestTool[["🔧 generate_and_run_tests()<br/>Dynamic test creation"]]:::tool
-    SearchTool[["🔧 search_past_feedback()<br/>History retrieval"]]:::tool
-    UpdateTool[["🔧 update_grading_progress()<br/>Progress tracking"]]:::tool
-    SaveTool[["🔧 save_grading_report()<br/>Report generation"]]:::tool
-    
-    %% Storage
-    SessionState[("💾 Session State<br/>code_to_review<br/>structure_analysis<br/>style_score<br/>test_results<br/>grading_attempts")]:::storage
-    UserState[("👤 User State<br/>total_submissions<br/>past_feedback<br/>improvement_history")]:::storage
-    
-    %% Relationships
-    User -->|"Submit Code"| MainAgent
-    MainAgent --> Sequential
-    
-    Sequential --> Analyzer
-    Sequential --> Loop
-    Sequential --> FeedbackSynth
-    
-    Loop --> Critic
-    Loop --> Reviser
-    
-    Analyzer -.->|uses| AnalyzeTool
-    StyleChecker -.->|uses| StyleTool
-    TestRunner -.->|uses| TestTool
-    FeedbackSynth -.->|uses| SearchTool
-    FeedbackSynth -.->|uses| UpdateTool
-    FeedbackSynth -.->|uses| SaveTool
-    
-    %% Parallel execution within Sequential
-    Sequential --> StyleChecker
-    Sequential --> TestRunner
-    
-    %% State Management
-    Analyzer ==>|writes| SessionState
-    StyleChecker ==>|writes| SessionState
-    TestRunner ==>|writes| SessionState
-    Critic ==>|reads/writes| SessionState
-    Reviser ==>|reads/writes| SessionState
-    FeedbackSynth ==>|reads| SessionState
-    FeedbackSynth ==>|reads/writes| UserState
-    
-    %% Data Flow Labels
-    Analyzer -.->|"code_analysis"| SessionState
-    StyleChecker -.->|"style_score, issues"| SessionState
-    TestRunner -.->|"test_results"| SessionState
-    
-    %% Output
-    FeedbackSynth -->|"Final Feedback"| User
+This branch contains **strategic placeholders** marked with comments like:
+```python
+# MODULE_4_STEP_2_ADD_STATE_STORAGE
+# MODULE_5_STEP_1_STYLE_CHECKER_TOOL
+# MODULE_6_STEP_5_CREATE_FIX_LOOP
 ```
 
-### Architecture Components
+You'll replace these placeholders as you progress through the modules, building the system incrementally.
 
-#### 🎯 **Main Orchestrator**
-- **CodeReviewAgent**: Entry point that coordinates the entire review process
-- Routes user input through the agent pipeline
-- Manages session and state persistence
+## 🚀 Getting Started
 
-#### 📋 **Workflow Management**
-- **SequentialAgent**: Controls the main pipeline flow (Analysis → Refinement → Feedback)
-- **LoopAgent**: Handles iterative refinement with Critic and Reviser agents (max 3 iterations)
+### Prerequisites
 
-#### 🤖 **Specialized LLM Agents**
-1. **Code Analyzer** (Gemini Flash)
-   - Parses Python code using AST
-   - Identifies functions, classes, imports
-   - Detects structural issues
-   
-2. **Style Checker** (Gemini Flash)
-   - Validates PEP 8 compliance
-   - Calculates style score (0-100)
-   - Reports specific violations with line numbers
-   
-3. **Test Runner** (Gemini Flash)
-   - Generates appropriate test cases
-   - Executes tests in isolated subprocess
-   - Reports pass/fail statistics
-   
-4. **Critic & Reviser** (Gemini Flash)
-   - Work in tandem within the Loop Agent
-   - Critic identifies issues, Reviser suggests fixes
-   - Iteratively improve code quality
-   
-5. **Feedback Synthesizer** (Gemini Pro)
-   - Combines all analysis results
-   - Retrieves historical feedback
-   - Generates personalized, constructive feedback
+- Python 3.10+
+- Google Cloud account with billing enabled
+- `gcloud` CLI installed and authenticated
+- Git
 
-#### 🔧 **Tool Functions**
-- **analyze_code_structure()**: AST-based code parsing
-- **check_code_style()**: pycodestyle integration
-- **generate_and_run_tests()**: Dynamic test generation and execution
-- **search_past_feedback()**: Historical feedback retrieval
-- **update_grading_progress()**: Progress tracking
-- **save_grading_report()**: Artifact generation
+### Setup Instructions
 
-#### 💾 **State Management**
-- **Session State**: Temporary data for current review
-- **User State**: Persistent user history and preferences
-- **Artifact Storage**: Reports and feedback archives
-
-## 📋 Prerequisites
-
-- Python 3.10 or higher
-- Google Cloud Project (for Vertex AI) or Google AI Studio API key
-- Git for version control
-- (Optional) Docker for containerized deployment
-
-## 🚀 Quick Start
-
-### 1. Clone the Repository
-
+**1. Clone and checkout the codelab branch:**
 ```bash
 git clone https://github.com/ayoisio/code-review-assistant.git
 cd code-review-assistant
+git checkout codelab
 ```
 
-### 2. Set Up Environment
-
+**2. Create virtual environment:**
 ```bash
-# Create virtual environment
 python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Or using Poetry (recommended)
-poetry install
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
 ```
 
-### 3. Configure Environment Variables
-
+**3. Install dependencies:**
 ```bash
-# Copy the example environment file
+pip install -r code_review_assistant/requirements.txt
+```
+
+**4. Configure your environment:**
+```bash
 cp .env.example .env
-
-# Edit .env with your settings
-nano .env  # or use your preferred editor
+nano .env  # Add your GOOGLE_CLOUD_PROJECT
 ```
 
-Key configuration options:
-- `GOOGLE_CLOUD_PROJECT`: Your GCP project ID
-- `GOOGLE_GENAI_USE_VERTEXAI`: Set to `true` for Vertex AI, `false` for AI Studio
-- `GOOGLE_API_KEY`: Your API key (if using AI Studio)
+**5. Start the codelab:**
 
-### 4. Run the Assistant
+Follow the workshop at: [Codelab Link](https://your-codelab-url.com)
 
-#### Web Interface (Recommended)
-```bash
-adk web code_review_assistant/
-```
-Navigate to `http://localhost:8080` in your browser.
+Or open `docs/codelab.md` in this repository.
 
-#### Command Line
-```bash
-adk run code_review_assistant/
-```
-
-#### API Server
-```bash
-adk api_server code_review_assistant/
-```
-
-## 🏗️ Project Structure
+## 📂 Codelab Branch Structure
 
 ```
 code-review-assistant/
 ├── code_review_assistant/
-│   ├── __init__.py
-│   ├── agent.py                 # Main agent orchestration
-│   ├── config.py                 # Configuration management
-│   ├── tools.py                  # Tool implementations
-│   └── sub_agents/               # Individual agent modules
-│       ├── code_analyzer.py
-│       ├── style_checker.py
-│       ├── test_runner.py
-│       └── feedback_synthesizer.py
-├── test_code_inputs/             # Sample code for testing
-│   ├── good_code.py
-│   ├── needs_linting.py
-│   ├── failing_tests.py
-│   └── test_cases.json
-├── deployment/
-│   └── deploy.py                 # Deployment automation script
-├── tests/                        # Unit and integration tests
-├── docs/                         # Additional documentation
-├── .env.example                  # Environment variable template
-├── pyproject.toml                # Project dependencies and metadata
-├── requirements.txt              # Python dependencies
-└── README.md                     # This file
+│   ├── agent.py                 # Placeholders for pipelines
+│   ├── config.py                # Complete - no changes needed
+│   ├── constants.py             # Complete - StateKeys defined
+│   ├── tools.py                 # Placeholders for tools (Modules 4-6)
+│   └── sub_agents/
+│       ├── review_pipeline/     # Placeholders (Module 5)
+│       │   ├── code_analyzer.py
+│       │   ├── style_checker.py
+│       │   ├── test_runner.py
+│       │   └── feedback_synthesizer.py
+│       └── fix_pipeline/        # Placeholders (Module 6)
+│           ├── code_fixer.py
+│           ├── fix_test_runner.py
+│           ├── fix_validator.py
+│           └── fix_synthesizer.py
+├── tests/
+│   └── test_agent_engine.py    # Complete - test deployment
+├── deploy.sh                    # Complete - handles all deployments
+├── docs/
+│   └── codelab.md              # Full workshop instructions
+└── README.md                    # This file
 ```
 
-## 🔧 Configuration
+## 🧩 Module Overview
 
-### Model Selection
+### Module 3: Your First Agent (15 min)
+- Set up Google Cloud environment
+- Create basic agent with `adk create`
+- Understand limitations of LLM-only approaches
 
-The assistant uses two Gemini models configured in `config.py`:
+### Module 4: Building Your First Agent (15 min)
+- Create `analyze_code_structure()` tool with AST parsing
+- Add state management with StateKeys constants
+- Use async + thread pools for performance
+- Connect tool to Code Analyzer agent
 
-```python
-# Fast model for analysis tasks
-worker_model = "gemini-2.5-flash"
+**Placeholders you'll fill:**
+- `MODULE_4_STEP_2_ADD_STATE_STORAGE`
+- `MODULE_4_STEP_3_ADD_ASYNC`
+- `MODULE_4_STEP_4_EXTRACT_DETAILS`
+- `MODULE_4_STEP_4_HELPER_FUNCTION`
+- `MODULE_4_STEP_5_CREATE_AGENT`
 
-# Advanced model for nuanced feedback
-critic_model = "gemini-2.5-pro"
-```
+### Module 5: Building a Pipeline (28 min)
+- Add Style Checker with `check_code_style()` tool
+- Add Test Runner with built-in code executor
+- Add Feedback Synthesizer with memory search
+- Wire 4 agents into Sequential pipeline
+- Create root agent
 
-### Grading Parameters
+**Placeholders you'll fill:**
+- `MODULE_5_STEP_1_STYLE_CHECKER_TOOL`
+- `MODULE_5_STEP_1_STYLE_HELPERS`
+- `MODULE_5_STEP_1_INSTRUCTION_PROVIDER`
+- `MODULE_5_STEP_1_STYLE_CHECKER_AGENT`
+- `MODULE_5_STEP_2_INSTRUCTION_PROVIDER`
+- `MODULE_5_STEP_2_TEST_RUNNER_AGENT`
+- `MODULE_5_STEP_4_SEARCH_PAST_FEEDBACK`
+- `MODULE_5_STEP_4_UPDATE_GRADING_PROGRESS`
+- `MODULE_5_STEP_4_SAVE_GRADING_REPORT`
+- `MODULE_5_STEP_4_INSTRUCTION_PROVIDER`
+- `MODULE_5_STEP_4_SYNTHESIZER_AGENT`
+- `MODULE_5_STEP_5_CREATE_PIPELINE`
 
-Adjust grading thresholds in your `.env` file:
+### Module 6: Adding the Fix Pipeline (35 min)
+- Add Code Fixer agent
+- Add Fix Test Runner agent
+- Add Fix Validator with loop exit logic
+- Create LoopAgent with max 3 iterations
+- Add Fix Synthesizer
+- Wire fix pipeline with review pipeline
+
+**Placeholders you'll fill:**
+- `MODULE_6_STEP_1_CODE_FIXER_INSTRUCTION_PROVIDER`
+- `MODULE_6_STEP_1_CODE_FIXER_AGENT`
+- `MODULE_6_STEP_2_FIX_TEST_RUNNER_INSTRUCTION_PROVIDER`
+- `MODULE_6_STEP_2_FIX_TEST_RUNNER_AGENT`
+- `MODULE_6_STEP_3_VALIDATE_FIXED_STYLE`
+- `MODULE_6_STEP_3_COMPILE_FIX_REPORT`
+- `MODULE_6_STEP_3_EXIT_FIX_LOOP`
+- `MODULE_6_STEP_3_FIX_VALIDATOR_INSTRUCTION_PROVIDER`
+- `MODULE_6_STEP_3_FIX_VALIDATOR_AGENT`
+- `MODULE_6_STEP_5_CREATE_FIX_LOOP`
+- `MODULE_6_STEP_5_UPDATE_ROOT_AGENT`
+- `MODULE_6_STEP_6_FIX_SYNTHESIZER_INSTRUCTION_PROVIDER`
+- `MODULE_6_STEP_6_FIX_SYNTHESIZER_AGENT`
+- `MODULE_6_STEP_6_SAVE_FIX_REPORT`
+
+### Module 7: Deploying to Production (30 min)
+- Deploy to Agent Engine with `./deploy.sh agent-engine`
+- Test deployed agent
+- Monitor with Cloud Trace
+
+### Module 8: Production Observability (20 min)
+- Access Cloud Trace Explorer
+- Read waterfall charts
+- Understand performance characteristics
+- Identify bottlenecks
+
+## 🧪 Testing Your Progress
+
+After each module, test your agent:
 
 ```bash
-PASSING_SCORE_THRESHOLD=0.8
-STYLE_WEIGHT=0.3
-TEST_WEIGHT=0.5
-STRUCTURE_WEIGHT=0.2
-MAX_GRADING_ATTEMPTS=3
+# Module 4 - Test analyzer only
+adk run code_review_assistant --agent=code_analyzer
+
+# Module 5 - Test complete review pipeline
+adk run code_review_assistant
+
+# Module 6 - Test with fix pipeline
+adk run code_review_assistant
+# Submit buggy code, accept fix offer
+
+# Module 7 - Test deployed agent
+python tests/test_agent_engine.py
 ```
 
-### Session Management
+## 🔍 Key Learning Objectives
 
-Choose your session backend:
+By completing this codelab, you'll master:
 
-```bash
-# Local development (SQLite)
-SESSION_SERVICE_URI=sqlite:///./sessions.db
+- **Tool Integration**: Building deterministic tools (AST, linters) vs LLM-only approaches
+- **Sequential Pipelines**: Orchestrating multiple agents with state flow
+- **Loop Architecture**: Iterative refinement with exit conditions (`escalate`)
+- **State Management**: Three-tier state (temp/session/user) with type-safe constants
+- **Dynamic Instructions**: Context providers that inject state into prompts
+- **Production Deployment**: Using `deploy.sh` for Agent Engine and Cloud Run
+- **Observability**: Reading Cloud Trace to understand agent behavior
 
-# Production (PostgreSQL)
-SESSION_SERVICE_URI=postgresql://user:pass@host/db
+## 🎓 Comparing Branches
 
-# Vertex AI managed sessions
-SESSION_SERVICE_URI=vertexai://agent-engine-id
-```
+| Aspect | Codelab Branch | Main Branch |
+|--------|----------------|-------------|
+| Purpose | Educational, step-by-step | Production-ready reference |
+| Code | Placeholders with comments | Complete implementations |
+| Use Case | Learning by building | Reference or deployment |
+| Documentation | Inline guidance | API-style docs |
 
-## 🎯 Usage Examples
+## 💡 Tips for Success
 
-### Basic Code Review
+**Follow the placeholders in order:**
+- Module 4 → Module 5 → Module 6 → Module 7 → Module 8
+- Each module builds on the previous one
 
-```python
-# Submit code for review
-code = """
-def add(a, b):
-    return a + b
+**Test frequently:**
+- After completing each step, run your agent
+- Verify tools work before adding agents
+- Check state flows correctly between agents
 
-def fibonacci(n):
-    if n <= 1:
-        return n
-    return fibonacci(n-1) + fibonacci(n-2)
-"""
+**Use the constants:**
+- Always use `StateKeys.CODE_TO_REVIEW` instead of `"code_to_review"`
+- This prevents typos that break multi-agent pipelines
 
-# The assistant will:
-# 1. Analyze code structure
-# 2. Check PEP 8 compliance
-# 3. Generate and run tests
-# 4. Provide comprehensive feedback
-```
+**Read the aside boxes:**
+- They explain WHY certain patterns are used
+- They highlight common mistakes to avoid
 
-### Testing Sample Files
+**Compare with main branch if stuck:**
+- The main branch has complete implementations
+- Use it as a reference, not copy-paste
 
-The project includes test files in `test_code_inputs/`:
+## 🆘 Troubleshooting
 
-1. **good_code.py**: Well-written code that should pass all checks
-2. **needs_linting.py**: Code with style violations
-3. **failing_tests.py**: Code with logical errors
+**"Module placeholder not found":**
+- Ensure you're on the `codelab` branch: `git branch`
+- Pull latest changes: `git pull origin codelab`
 
-### API Usage
+**"Import errors after adding code":**
+- Check you replaced the ENTIRE placeholder, not just part of it
+- Verify indentation matches surrounding code
 
-```python
-import requests
+**"Agent doesn't call my tool":**
+- Check tool is in the agent's `tools=[...]` list
+- Verify function name matches exactly
+- Look at agent instruction - does it tell LLM to use the tool?
 
-# Submit code for review
-response = requests.post(
-    "http://localhost:8080/run_sse",
-    json={
-        "app_name": "code_review_assistant",
-        "user_id": "student_123",
-        "session_id": "session_abc",
-        "new_message": {
-            "role": "user",
-            "parts": [{"text": "Review this code:\n\ndef hello():\n    print('Hello')"}]
-        },
-        "streaming": False
-    }
-)
+**"State key returns None":**
+- Check spelling matches `StateKeys` constant exactly
+- Verify previous agent actually wrote to that key
+- Use `print(tool_context.state)` to debug
 
-print(response.json())
-```
+**"Loop never exits":**
+- Ensure `exit_fix_loop()` tool sets `tool_context.actions.escalate = True`
+- Check validator's instruction tells it to call this tool when successful
+- Verify `max_iterations=3` is set on LoopAgent
 
-## 🚢 Deployment
+## ✅ Completion Checklist
 
-### Local Development
+After finishing the codelab, you should have:
 
-```bash
-# Run with hot reload
-adk web code_review_assistant/ --reload
+- [ ] Complete review pipeline (4 agents working sequentially)
+- [ ] Complete fix pipeline (loop + synthesizer)
+- [ ] All tools implemented and tested
+- [ ] Deployed to Agent Engine or Cloud Run
+- [ ] Verified with `tests/test_agent_engine.py`
+- [ ] Reviewed traces in Cloud Trace Explorer
+- [ ] Understanding of all production patterns
 
-# Run with custom port
-adk web code_review_assistant/ --port 3000
-```
+## 🎉 Next Steps
 
-### Vertex AI Agent Engine
+Once you complete the codelab:
 
-```bash
-# Test locally first
-python deployment/deploy.py --test_local
-
-# Deploy to Agent Engine
-python deployment/deploy.py --create \
-    --project_id=your-project \
-    --location=us-central1 \
-    --bucket=your-staging-bucket
-
-# List deployed agents
-python deployment/deploy.py --list
-
-# Delete an agent
-python deployment/deploy.py --delete --resource_id=agent-id
-```
-
-### Cloud Run
-
-```bash
-# Using ADK CLI
-adk deploy cloud_run \
-    --project=your-project \
-    --region=us-central1 \
-    --with_ui \
-    code_review_assistant/
-
-# Using gcloud
-gcloud run deploy code-review-assistant \
-    --source . \
-    --region us-central1 \
-    --allow-unauthenticated
-```
-
-### Google Kubernetes Engine (GKE)
-
-```bash
-# Deploy to GKE
-adk deploy gke \
-    --project=your-project \
-    --cluster_name=your-cluster \
-    --region=us-central1 \
-    --with_ui \
-    code_review_assistant/
-```
-
-## 🧪 Testing
-
-### Run Unit Tests
-
-```bash
-# Run all tests
-pytest
-
-# Run with coverage
-pytest --cov=code_review_assistant --cov-report=html
-
-# Run specific test file
-pytest tests/test_tools.py
-```
-
-### Run Integration Tests
-
-```bash
-# Test agent evaluation
-pytest tests/integration/
-
-# Test with specific fixture
-pytest tests/integration/test_agent_evaluation.py
-```
-
-### Code Quality Checks
-
-```bash
-# Format code
-black code_review_assistant/
-
-# Check style
-flake8 code_review_assistant/
-
-# Type checking
-mypy code_review_assistant/
-
-# All checks
-pre-commit run --all-files
-```
-
-## 📊 Monitoring and Debugging
-
-### View Logs
-
-```bash
-# ADK logs
-tail -f ~/.adk/logs/agent.log
-
-# Application logs
-tail -f logs/code_review_assistant.log
-```
-
-### Debug Mode
-
-Set in `.env`:
-```bash
-DEBUG_MODE=true
-LOG_LEVEL=DEBUG
-ENABLE_TRACING=true
-```
-
-### Code Style
-
-- Follow PEP 8 guidelines
-- Use type hints for all functions
-- Write docstrings for all public functions
-- Add unit tests for new features
+1. **Switch to main branch** to see the complete production code
+2. **Customize the assistant** for your specific use case
+3. **Add new languages** beyond Python
+4. **Integrate with GitHub** for automated PR reviews
+5. **Build your own agent** using these patterns
 
 ---
 
-Built with ❤️ using [Google ADK](https://ai.google.dev/adk) and [Gemini](https://ai.google.dev/gemini)
+Built with ❤️ using Google ADK and Gemini
