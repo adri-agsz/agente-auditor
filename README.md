@@ -68,8 +68,6 @@ nano .env  # Add your GOOGLE_CLOUD_PROJECT
 
 Follow the workshop at: [Codelab Link](https://your-codelab-url.com)
 
-Or open `docs/codelab.md` in this repository.
-
 ## 📂 Codelab Branch Structure
 
 ```
@@ -93,8 +91,6 @@ code-review-assistant/
 ├── tests/
 │   └── test_agent_engine.py    # Complete - test deployment
 ├── deploy.sh                    # Complete - handles all deployments
-├── docs/
-│   └── codelab.md              # Full workshop instructions
 └── README.md                    # This file
 ```
 
