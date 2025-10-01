@@ -50,11 +50,11 @@ async def analyze_code_structure(code: str, tool_context: ToolContext) -> Dict[s
                 "message": "No code provided or invalid input"
             }
 
-        # MODULE_4_STEP_2_ADD_STATE_STORAGE
-
         # MODULE_4_STEP_3_ADD_ASYNC
 
-        # MODULE_4_STEP_4_EXTRACT_DETAILS
+            # MODULE_4_STEP_4_EXTRACT_DETAILS
+
+        # MODULE_4_STEP_2_ADD_STATE_STORAGE
 
         logger.info(f"Tool: Analysis complete - {analysis['metrics']['function_count']} functions, "
                     f"{analysis['metrics']['class_count']} classes")
