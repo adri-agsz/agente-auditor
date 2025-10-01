@@ -69,6 +69,7 @@ async def analyze_code_structure(code: str, tool_context: ToolContext) -> Dict[s
     except SyntaxError as e:
         error_msg = f"Syntax error at line {e.lineno}: {e.msg}"
         logger.error(f"Tool: {error_msg}")
+        tool_context.state[StateKeys.CODE_TO_REVIEW] = code
         tool_context.state[StateKeys.SYNTAX_ERROR] = error_msg
 
         return {
