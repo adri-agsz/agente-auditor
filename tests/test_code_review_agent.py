@@ -22,7 +22,6 @@ async def test_style_violations():
         eval_dataset_file_path_or_dir="tests/integration/style_violations.test.json"
     )
 
-
 @pytest.mark.asyncio
 async def test_all_integration_tests():
     """Run all test files in the integration directory."""
