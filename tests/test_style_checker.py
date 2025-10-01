@@ -15,12 +15,6 @@ from google.genai.types import Content, Part
 async def test():
     session_service = get_session_service()
 
-    runner = Runner(
-        agent=style_checker_agent,
-        app_name="test_style_checker",
-        session_service=session_service
-    )
-
     test_code = """
 def add(a,b):return a+b
 class calculator:
@@ -33,14 +27,20 @@ class calculator:
         user_id="test_user"
     )
 
-    # Pre-populate state with mock data that Code Analyzer would normally provide
+    # Directly set state variables that Code Analyzer would normally provide
     session.state[StateKeys.CODE_TO_REVIEW] = test_code
     session.state[StateKeys.CODE_ANALYSIS] = {
         'functions': [{'name': 'add'}, {'name': 'multiply'}],
         'classes': [{'name': 'calculator'}],
         'metrics': {'function_count': 2, 'class_count': 1}
     }
-    await session_service.update_session(session)
+    # No update call needed - state is modified in place
+
+    runner = Runner(
+        agent=style_checker_agent,
+        app_name="test_style_checker",
+        session_service=session_service
+    )
 
     print("Testing style checker...")
 
