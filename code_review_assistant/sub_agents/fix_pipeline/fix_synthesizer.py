@@ -8,8 +8,8 @@ from google.adk.agents import Agent
 from google.adk.agents.readonly_context import ReadonlyContext
 from google.adk.tools import FunctionTool
 from google.adk.utils import instructions_utils
-from code_review_assistant.config import config
-from code_review_assistant.tools import save_fix_report
+from ...config import config
+from ...tools import save_fix_report
 
 
 # MODULE_6_STEP_6_FIX_SYNTHESIZER_INSTRUCTION_PROVIDER

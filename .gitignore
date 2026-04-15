@@ -406,3 +406,8 @@ yarn.lock
 ignore/
 .ignore/
 do_not_commit/
+
+# Ignorar llaves JSON
+*.json
+# Ignorar carpetas temporales
+code_review_assistant_tmp*/

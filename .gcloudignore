@@ -1,0 +1,12 @@
+.git
+.gitignore
+__pycache__
+.venv
+.adk
+tests
+.gemini
+.env
+*.pyc
+node_modules
+dist
+build

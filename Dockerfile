@@ -48,4 +48,4 @@ ENV SESSION_SERVICE_URI="sqlite:///./sessions.db"
 # This is the command that will be run when the container starts.
 # It's simple and flexible: it just runs the ADK API server and expects the
 # session service URI to be provided as an environment variable.
-CMD ["sh", "-c", "adk api_server code_review_assistant --port ${PORT:-8080} --host 0.0.0.0 --session_service_uri \"$SESSION_SERVICE_URI\" --artifact_service_uri \"$ARTIFACT_SERVICE_URI\""]
+CMD ["sh", "-c", "adk api_server code_review_assistant --port ${PORT:-8080} --host 0.0.0.0 --ui --session_service_uri \"$SESSION_SERVICE_URI\" --artifact_service_uri \"$ARTIFACT_SERVICE_URI\""]

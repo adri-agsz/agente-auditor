@@ -9,7 +9,7 @@ from google.adk.agents import Agent
 from google.adk.agents.readonly_context import ReadonlyContext
 from google.adk.code_executors import BuiltInCodeExecutor
 from google.adk.utils import instructions_utils
-from code_review_assistant.config import config
+from ...config import config
 
 
 # MODULE_6_STEP_2_FIX_TEST_RUNNER_INSTRUCTION_PROVIDER

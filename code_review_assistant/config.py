@@ -76,7 +76,7 @@ class AgentConfig(BaseSettings):
         default="gemini-2.5-flash", description="Model for fast analysis tasks."
     )
     critic_model: str = Field(
-        default="gemini-2.5-pro", description="Advanced model for nuanced feedback."
+        default="gemini-2.5-flash", description="Advanced model for nuanced feedback."
     )
 
     # --- Grading Parameters ---

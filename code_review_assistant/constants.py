@@ -9,12 +9,26 @@ class StateKeys:
 
     # === Session-level keys (persist within a session) ===
     CODE_TO_REVIEW = "code_to_review"
+    ROUTE = "route"
+
     CODE_ANALYSIS = "code_analysis"
     CODE_LINE_COUNT = "code_line_count"
     STYLE_SCORE = "style_score"
     STYLE_ISSUES = "style_issues"
     STYLE_ISSUE_COUNT = "style_issue_count"
-
+    SCRIPT_NAME = "script_name"
+    SOURCE_TABLES = "source_tables"
+    DESTINATION_TABLES = "destination_tables"
+    MEDALLION_LAYER = "medallion_layer"
+    MEDALLION_CLASS = "medallion_classification"
+    KEYS_USED = "keys_used"
+    UDFS = "udfs"
+    SCHEMAS = "schemas"
+    ERROR_RATIO = "error_ratio"
+    
+    TABLE_METADATA = "table_metadata"  # From extractor_agent output_key
+    SQL_METADATA = "sql_metadata"
+    PROJECT_ID = "project_id"  # From extractor_agent output_key
     # === Test-related keys ===
     TEST_EXECUTION_SUMMARY = "test_execution_summary"  # From test_runner_agent output_key
 
